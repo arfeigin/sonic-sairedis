@@ -26,10 +26,12 @@ SaiSwitch::SaiSwitch(
         _In_ std::shared_ptr<RedisClient> client,
         _In_ std::shared_ptr<VirtualOidTranslator> translator,
         _In_ std::shared_ptr<sairedis::SaiInterface> vendorSai,
-        _In_ bool warmBoot):
+        _In_ bool warmBoot,
+        _In_ bool fastBoot):
     SaiSwitchInterface(switch_vid, switch_rid),
     m_vendorSai(vendorSai),
     m_warmBoot(warmBoot),
+    m_fastBoot(fastBoot),
     m_translator(translator),
     m_client(client)
 {
@@ -51,14 +53,20 @@ SaiSwitch::SaiSwitch(
      * be populated, and all references could be increased.
      */
 
-    helperDiscover();
+    if (!fastBoot)
+    {
+        helperDiscover();
+    }
 
     if (warmBoot)
     {
         checkWarmBootDiscoveredRids();
     }
 
-    helperSaveDiscoveredObjectsToRedis();
+    if (!fastBoot)
+    {
+        helperSaveDiscoveredObjectsToRedis();
+    }
 
     helperInternalOids();
 
@@ -998,6 +1006,13 @@ bool SaiSwitch::isWarmBoot() const
     SWSS_LOG_ENTER();
 
     return m_warmBoot;
+}
+
+bool SaiSwitch::isFastBoot() const
+{
+    SWSS_LOG_ENTER();
+
+    return m_fastBoot;
 }
 
 void SaiSwitch::collectPortRelatedObjects(

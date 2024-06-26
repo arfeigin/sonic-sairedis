@@ -56,6 +56,7 @@ Syncd::Syncd(
         _In_ bool isWarmStart):
     m_commandLineOptions(cmd),
     m_isWarmStart(isWarmStart),
+    m_isFastBoot(m_commandLineOptions->m_startType == SAI_START_TYPE_FAST_BOOT),
     m_firstInitWasPerformed(false),
     m_asicInitViewMode(false), // by default we are in APPLY view mode
     m_vendorSai(vendorSai),
@@ -2975,7 +2976,7 @@ sai_status_t Syncd::processOidCreate(
              * constructor, like getting all queues, ports, etc.
              */
 
-            m_switches[switchVid] = std::make_shared<SaiSwitch>(switchVid, objectRid, m_client, m_translator, m_vendorSai);
+            m_switches[switchVid] = std::make_shared<SaiSwitch>(switchVid, objectRid, m_client, m_translator, m_vendorSai, m_isWarmStart, m_isFastBoot);
 
             m_mdioIpcServer->setSwitchId(objectRid);
 
@@ -4274,7 +4275,7 @@ void Syncd::onSwitchCreateInInitViewMode(
 
         // make switch initialization and get all default data
 
-        m_switches[switchVid] = std::make_shared<SaiSwitch>(switchVid, switchRid, m_client, m_translator, m_vendorSai);
+        m_switches[switchVid] = std::make_shared<SaiSwitch>(switchVid, switchRid, m_client, m_translator, m_vendorSai, m_isWarmStart, m_isFastBoot);
 
         m_mdioIpcServer->setSwitchId(switchRid);
 
@@ -4458,7 +4459,7 @@ void Syncd::performWarmRestartSingleSwitch(
 
     // perform all get operations on existing switch
 
-    auto sw = m_switches[switchVid] = std::make_shared<SaiSwitch>(switchVid, switchRid, m_client, m_translator, m_vendorSai, true);
+    auto sw = m_switches[switchVid] = std::make_shared<SaiSwitch>(switchVid, switchRid, m_client, m_translator, m_vendorSai, true, m_isFastBoot);
 
     startDiagShell(switchRid);
 }

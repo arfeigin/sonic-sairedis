@@ -378,6 +378,8 @@ namespace syncd
 
             bool m_isWarmStart;
 
+            bool m_isFastBoot;
+
             bool m_firstInitWasPerformed;
 
             SwitchNotifications m_sn;

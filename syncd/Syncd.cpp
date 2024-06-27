@@ -56,7 +56,6 @@ Syncd::Syncd(
         _In_ bool isWarmStart):
     m_commandLineOptions(cmd),
     m_isWarmStart(isWarmStart),
-    m_isFastBoot(m_commandLineOptions->m_startType == SAI_START_TYPE_FAST_BOOT),
     m_firstInitWasPerformed(false),
     m_asicInitViewMode(false), // by default we are in APPLY view mode
     m_vendorSai(vendorSai),
@@ -65,6 +64,8 @@ Syncd::Syncd(
     m_timerWatchdog(cmd->m_watchdogWarnTimeSpan * WD_DELAY_FACTOR)
 {
     SWSS_LOG_ENTER();
+
+    m_isFastBoot = (m_commandLineOptions->m_startType == SAI_START_TYPE_FAST_BOOT);
 
     SWSS_LOG_NOTICE("sairedis git revision %s, SAI git revision: %s", SAIREDIS_GIT_REVISION, SAI_GIT_REVISION);
 

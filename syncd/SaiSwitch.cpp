@@ -962,7 +962,10 @@ void SaiSwitch::onPostPortCreate(
 
     SaiDiscovery sd(m_vendorSai);
 
-    auto discovered = sd.discover(port_rid);
+    if(!isFastBoot)
+    {
+        auto discovered = sd.discover(port_rid);
+    }
 
     auto defaultOidMap = sd.getDefaultOidMap();
 

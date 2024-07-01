@@ -37,6 +37,15 @@ SaiSwitch::SaiSwitch(
 {
     SWSS_LOG_ENTER();
 
+    if(fastBoot)
+    {
+        SWSS_LOG_NOTICE("switch created with FASTBOOT flag");
+    }
+    else
+    {
+        SWSS_LOG_NOTICE("switch created without FASTBOOT flag");
+    }
+
     SWSS_LOG_TIMER("constructor");
 
     GlobalSwitchId::setSwitchId(m_switch_rid);

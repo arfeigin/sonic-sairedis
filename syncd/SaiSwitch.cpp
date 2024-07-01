@@ -960,12 +960,15 @@ void SaiSwitch::onPostPortCreate(
 {
     SWSS_LOG_ENTER();
 
+    if (isFastBoot())
+    {
+        SWSS_LOG_NOTICE("afeigin: in fast-reboot, skipping discovery for port creation");
+        return;
+    }
+
     SaiDiscovery sd(m_vendorSai);
 
-    if(!isFastBoot)
-    {
-        auto discovered = sd.discover(port_rid);
-    }
+    auto discovered = sd.discover(port_rid);
 
     auto defaultOidMap = sd.getDefaultOidMap();
 
@@ -1011,7 +1014,7 @@ bool SaiSwitch::isWarmBoot() const
     return m_warmBoot;
 }
 
-bool SaiSwitch::isFastBoot() const
+bool SaiSwitch::isFastBoot()
 {
     SWSS_LOG_ENTER();
 

@@ -293,7 +293,7 @@ namespace syncd
 
             bool isWarmBoot() const;
 
-            bool isFastBoot() const;
+            bool isFastBoot();
 
             void checkWarmBootDiscoveredRids();
 

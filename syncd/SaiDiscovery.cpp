@@ -39,6 +39,7 @@ void SaiDiscovery::discover(
         _Inout_ std::set<sai_object_id_t> &discovered)
 {
     SWSS_LOG_ENTER();
+    SWSS_LOG_WARN("afeigin0: entered discover(two args function)");
 
     /*
      * NOTE: This method is only good after switch init since we are making
@@ -66,7 +67,7 @@ void SaiDiscovery::discover(
                 sai_serialize_object_id(rid).c_str());
     }
 
-    SWSS_LOG_DEBUG("processing %s: %s",
+    SWSS_LOG_WARN("processing %s: %s",
             sai_serialize_object_id(rid).c_str(),
             sai_serialize_object_type(ot).c_str());
 
@@ -145,7 +146,7 @@ void SaiDiscovery::discover(
                 }
             }
 
-            SWSS_LOG_DEBUG("getting %s for %s", md->attridname,
+            SWSS_LOG_WARN("afeigin8: getting %s for %s", md->attridname,
                     sai_serialize_object_id(rid).c_str());
 
             sai_status_t status = m_sai->get(mk.objecttype, mk.objectkey.key.object_id, 1, &attr);
@@ -200,7 +201,7 @@ void SaiDiscovery::discover(
                 //continue;
             }
 
-            SWSS_LOG_DEBUG("getting %s for %s", md->attridname,
+            SWSS_LOG_WARN("afeigin10: getting %s for %s", md->attridname,
                     sai_serialize_object_id(rid).c_str());
 
             sai_object_id_t local[SAI_DISCOVERY_LIST_MAX_ELEMENTS];
@@ -224,7 +225,7 @@ void SaiDiscovery::discover(
                 continue;
             }
 
-            SWSS_LOG_DEBUG("list count %s %u", md->attridname, attr.value.objlist.count);
+            SWSS_LOG_NOTICE("list count %s %u", md->attridname, attr.value.objlist.count);
 
             for (uint32_t i = 0; i < attr.value.objlist.count; ++i)
             {
@@ -251,6 +252,7 @@ std::set<sai_object_id_t> SaiDiscovery::discover(
         _In_ sai_object_id_t startRid)
 {
     SWSS_LOG_ENTER();
+    SWSS_LOG_WARN("afeigin0: entered discover(one args function)");
 
     /*
      * Preform discovery on the switch to obtain ASIC view of

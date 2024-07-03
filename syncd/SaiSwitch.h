@@ -34,7 +34,8 @@ namespace syncd
                     _In_ std::shared_ptr<RedisClient> client,
                     _In_ std::shared_ptr<VirtualOidTranslator> translator,
                     _In_ std::shared_ptr<sairedis::SaiInterface> vendorSai,
-                    _In_ bool warmBoot = false);
+                    _In_ bool warmBoot = false,
+                    _In_ bool fastBoot = false);
 
             virtual ~SaiSwitch() = default;
 
@@ -292,6 +293,8 @@ namespace syncd
 
             bool isWarmBoot() const;
 
+            bool isFastBoot();
+
             void checkWarmBootDiscoveredRids();
 
             sai_switch_type_t getSwitchType() const;
@@ -347,6 +350,7 @@ namespace syncd
             std::shared_ptr<sairedis::SaiInterface> m_vendorSai;
 
             bool m_warmBoot;
+            bool m_fastBoot;
 
             std::map<sai_object_id_t, std::set<sai_object_id_t>> m_portRelatedObjects;
 

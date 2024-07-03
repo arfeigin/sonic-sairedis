@@ -26,10 +26,12 @@ SaiSwitch::SaiSwitch(
         _In_ std::shared_ptr<RedisClient> client,
         _In_ std::shared_ptr<VirtualOidTranslator> translator,
         _In_ std::shared_ptr<sairedis::SaiInterface> vendorSai,
-        _In_ bool warmBoot):
+        _In_ bool warmBoot,
+        _In_ bool fastBoot):
     SaiSwitchInterface(switch_vid, switch_rid),
     m_vendorSai(vendorSai),
     m_warmBoot(warmBoot),
+    m_fastBoot(fastBoot),
     m_translator(translator),
     m_client(client)
 {
@@ -952,6 +954,12 @@ void SaiSwitch::onPostPortCreate(
 {
     SWSS_LOG_ENTER();
 
+    if (isFastBoot())
+    {
+        SWSS_LOG_NOTICE("afeigin: in fast-reboot, skipping discovery for port creation");
+        return;
+    }
+
     SaiDiscovery sd(m_vendorSai);
 
     auto discovered = sd.discover(port_rid);
@@ -998,6 +1006,13 @@ bool SaiSwitch::isWarmBoot() const
     SWSS_LOG_ENTER();
 
     return m_warmBoot;
+}
+
+bool SaiSwitch::isFastBoot()
+{
+    SWSS_LOG_ENTER();
+
+    return m_fastBoot;
 }
 
 void SaiSwitch::collectPortRelatedObjects(

@@ -377,6 +377,7 @@ namespace syncd
             std::shared_ptr<CommandLineOptions> m_commandLineOptions;
 
             bool m_isWarmStart;
+            bool m_isFastBoot;
 
             bool m_firstInitWasPerformed;
 

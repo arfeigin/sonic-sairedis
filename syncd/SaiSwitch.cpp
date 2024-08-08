@@ -26,10 +26,12 @@ SaiSwitch::SaiSwitch(
         _In_ std::shared_ptr<RedisClient> client,
         _In_ std::shared_ptr<VirtualOidTranslator> translator,
         _In_ std::shared_ptr<sairedis::SaiInterface> vendorSai,
-        _In_ bool warmBoot):
+        _In_ bool warmBoot,
+        _In_ bool fastBoot):
     SaiSwitchInterface(switch_vid, switch_rid),
     m_vendorSai(vendorSai),
     m_warmBoot(warmBoot),
+    m_fastBoot(fastBoot),
     m_translator(translator),
     m_client(client)
 {
@@ -952,42 +954,45 @@ void SaiSwitch::onPostPortCreate(
 {
     SWSS_LOG_ENTER();
 
-    SaiDiscovery sd(m_vendorSai);
-
-    auto discovered = sd.discover(port_rid);
-
-    auto defaultOidMap = sd.getDefaultOidMap();
-
-    // we need to merge default oid maps
-
-    for (auto& kvp: defaultOidMap)
+    if (!isFastBoot())
     {
-        for (auto& it: kvp.second)
+        SaiDiscovery sd(m_vendorSai);
+
+        auto discovered = sd.discover(port_rid);
+
+        auto defaultOidMap = sd.getDefaultOidMap();
+
+        // we need to merge default oid maps
+
+        for (auto& kvp: defaultOidMap)
         {
-            m_defaultOidMap[kvp.first][it.first] = it.second;
+            for (auto& it: kvp.second)
+            {
+                m_defaultOidMap[kvp.first][it.first] = it.second;
+            }
         }
-    }
 
-    SWSS_LOG_NOTICE("discovered %zu new objects (including port) after creating port VID: %s",
-            discovered.size(),
-            sai_serialize_object_id(port_vid).c_str());
+        SWSS_LOG_NOTICE("discovered %zu new objects (including port) after creating port VID: %s",
+                discovered.size(),
+                sai_serialize_object_id(port_vid).c_str());
 
-    m_discovered_rids.insert(discovered.begin(), discovered.end());
+        m_discovered_rids.insert(discovered.begin(), discovered.end());
 
-    SWSS_LOG_NOTICE("putting ALL new discovered objects to redis for port %s",
-            sai_serialize_object_id(port_vid).c_str());
+        SWSS_LOG_NOTICE("putting ALL new discovered objects to redis for port %s",
+                sai_serialize_object_id(port_vid).c_str());
 
-    for (sai_object_id_t rid: discovered)
-    {
-        /*
-         * We also could thing of optimizing this since it's one call to redis
-         * per rid, and probably this should be ATOMIC.
-         *
-         * NOTE: We are also storing read only object's here, like default
-         * virtual router, CPU, default trap group, etc.
-         */
+        for (sai_object_id_t rid: discovered)
+        {
+            /*
+            * We also could thing of optimizing this since it's one call to redis
+            * per rid, and probably this should be ATOMIC.
+            *
+            * NOTE: We are also storing read only object's here, like default
+            * virtual router, CPU, default trap group, etc.
+            */
 
-        redisSetDummyAsicStateForRealObjectId(rid);
+            redisSetDummyAsicStateForRealObjectId(rid);
+        }
     }
 
     redisUpdatePortLaneMap(port_rid);
@@ -998,6 +1003,13 @@ bool SaiSwitch::isWarmBoot() const
     SWSS_LOG_ENTER();
 
     return m_warmBoot;
+}
+
+bool SaiSwitch::isFastBoot() const
+{
+    SWSS_LOG_ENTER();
+
+    return m_fastBoot;
 }
 
 void SaiSwitch::collectPortRelatedObjects(

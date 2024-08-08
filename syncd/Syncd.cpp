@@ -67,6 +67,8 @@ Syncd::Syncd(
 
     SWSS_LOG_NOTICE("sairedis git revision %s, SAI git revision: %s", SAIREDIS_GIT_REVISION, SAI_GIT_REVISION);
 
+    m_isFastBoot = (m_commandLineOptions->m_startType == SAI_START_TYPE_FAST_BOOT);
+
     setSaiApiLogLevel();
 
     SWSS_LOG_NOTICE("command line: %s", m_commandLineOptions->getCommandLineString().c_str());
@@ -2975,7 +2977,7 @@ sai_status_t Syncd::processOidCreate(
              * constructor, like getting all queues, ports, etc.
              */
 
-            m_switches[switchVid] = std::make_shared<SaiSwitch>(switchVid, objectRid, m_client, m_translator, m_vendorSai);
+            m_switches[switchVid] = std::make_shared<SaiSwitch>(switchVid, objectRid, m_client, m_translator, m_vendorSai, m_isWarmStart, m_isFastBoot);
 
             m_mdioIpcServer->setSwitchId(objectRid);
 
@@ -4274,7 +4276,7 @@ void Syncd::onSwitchCreateInInitViewMode(
 
         // make switch initialization and get all default data
 
-        m_switches[switchVid] = std::make_shared<SaiSwitch>(switchVid, switchRid, m_client, m_translator, m_vendorSai);
+        m_switches[switchVid] = std::make_shared<SaiSwitch>(switchVid, switchRid, m_client, m_translator, m_vendorSai, m_isWarmStart, m_isFastBoot);
 
         m_mdioIpcServer->setSwitchId(switchRid);
 
@@ -4458,7 +4460,7 @@ void Syncd::performWarmRestartSingleSwitch(
 
     // perform all get operations on existing switch
 
-    auto sw = m_switches[switchVid] = std::make_shared<SaiSwitch>(switchVid, switchRid, m_client, m_translator, m_vendorSai, true);
+    auto sw = m_switches[switchVid] = std::make_shared<SaiSwitch>(switchVid, switchRid, m_client, m_translator, m_vendorSai, true, m_isFastBoot);
 
     startDiagShell(switchRid);
 }

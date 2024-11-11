@@ -312,7 +312,6 @@ sai_status_t VendorSai::getStats(
         _In_ const sai_stat_id_t *counter_ids,
         _Out_ uint64_t *counters)
 {
-    MUTEX();
     SWSS_LOG_ENTER();
     VENDOR_CHECK_API_INITIALIZED();
 
@@ -350,7 +349,6 @@ sai_status_t VendorSai::getStatsExt(
         _In_ sai_stats_mode_t mode,
         _Out_ uint64_t *counters)
 {
-    MUTEX();
     SWSS_LOG_ENTER();
     VENDOR_CHECK_API_INITIALIZED();
 
@@ -365,7 +363,6 @@ sai_status_t VendorSai::clearStats(
         _In_ uint32_t number_of_counters,
         _In_ const sai_stat_id_t *counter_ids)
 {
-    MUTEX();
     SWSS_LOG_ENTER();
     VENDOR_CHECK_API_INITIALIZED();
 
@@ -385,7 +382,6 @@ sai_status_t VendorSai::bulkGetStats(
         _Inout_ sai_status_t *object_statuses,
         _Out_ uint64_t *counters)
 {
-    MUTEX();
     SWSS_LOG_ENTER();
     VENDOR_CHECK_API_INITIALIZED();
 
@@ -413,7 +409,6 @@ sai_status_t VendorSai::bulkClearStats(
         _In_ sai_stats_mode_t mode,
         _Inout_ sai_status_t *object_statuses)
 {
-    MUTEX();
     SWSS_LOG_ENTER();
     VENDOR_CHECK_API_INITIALIZED();
 

@@ -39,9 +39,6 @@ SaiSwitch::SaiSwitch(
 
     GlobalSwitchId::setSwitchId(m_switch_rid);
 
-    auto prio = swss::Logger::getInstance().getMinPrio();
-    swss::Logger::getInstance().setMinPrio(swss::Logger::Priority::SWSS_DEBUG);
-
     m_hardware_info = saiGetHardwareInfo();
 
     /*
@@ -55,8 +52,6 @@ SaiSwitch::SaiSwitch(
      */
 
     helperDiscover();
-
-    swss::Logger::getInstance().setMinPrio(prio);
 
     if (warmBoot)
     {

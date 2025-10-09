@@ -7,6 +7,6 @@
 . /usr/bin/syncd_init_common.sh
 
 config_syncd
-
+export SAI_SNIFFER_ENABLE=1
 exec ${CMD} ${CMD_ARGS}
 
